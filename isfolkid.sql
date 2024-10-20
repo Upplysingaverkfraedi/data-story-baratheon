@@ -3,11 +3,6 @@ SELECT gender, COUNT(*) as COUNT
 FROM family
 GROUP BY gender;
 
--- Hversu margir eru útvaldir
-SELECT chosen_one, COUNT(*) as COUNT
-FROM family
-GROUP BY chosen_one;
-
 -- Aldur persóna
 SELECT
     name,
@@ -15,14 +10,42 @@ SELECT
 FROM family
 WHERE birth IS NOT NULL;
 
--- Tengsl fjölskyldumeðlima
-SELECT id, name, mom, dad
-FROM family
-WHERE mom IS NOT NULL OR dad IS NOT NULL;
-
--- Góðar vs. illar persónur
+-- Meðalaldur eftir kyni
 SELECT
-    COALESCE(chosen_one, 'Unknown') AS nature,
-    COUNT(*) AS COUNT
+    gender,
+    AVG(COALESCE(death, 2024) - birth) AS avg_age
 FROM family
-GROUP BY COALESCE(chosen_one, 'Unknown');
+WHERE birth IS NOT NULL AND gender IS NOT NULL
+GROUP BY gender;
+
+-- Meðalaldur "good" vs "evil"
+SELECT 
+    COALESCE(chosen_one, 'Unknown') AS nature, 
+    AVG(COALESCE(death, 2024) - birth) AS avg_age
+FROM family
+WHERE birth IS NOT NULL
+AND chosen_one IN ('good', 'evil')
+GROUP BY nature;
+
+-- Meðalaldur good vs evil eftir kyni
+SELECT 
+    gender, 
+    COALESCE(chosen_one, 'Unknown') AS nature, 
+    AVG(COALESCE(death, 2024) - birth) AS avg_age
+FROM family
+WHERE birth IS NOT NULL
+AND chosen_one IN ('good', 'evil')
+GROUP BY gender, nature;
+
+-- Aldursdreifing good vs evil eftir kyni
+SELECT 
+    gender, 
+    COALESCE(chosen_one, 'Unknown') AS nature, 
+    COALESCE(death, 2024) - birth AS age
+FROM family
+WHERE birth IS NOT NULL
+AND chosen_one IN ('good', 'evil');
+
+
+
+

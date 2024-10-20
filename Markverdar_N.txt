@@ -1,0 +1,4 @@
+Helstu niðurstöður sem hægt er að lesa úr gröfunum er meðal annars: hvernig aldursdrefingin er eftir kynjum, hver meðallífstími karlar sé og meðallífstími kvenna sé.
+Að meðaltali lifðu karlar aðeins lengur heldur en konurnar og dreifingin var mun meiri hjá körlunum heldur en hjá konum.
+Einnig er hægt að lesa úr gröfunum hvort persónurnar sem voru góðar eða vondar sem lifðu lengur, og að meðaltali voru persónurnar sem voru góðar sem lifðu lengur heldur en þær persónur sem voru vonar. Þær persónur sem voru góðar þá lifðu konur að meðaltali aðeins lengur heldur en karlar, en það voru engar vondar konur til.
+Þetta gefur okkur góða yfirsýn yfir það hvað persónurnar lifðu lengi í sögunum, hvort það var munur á líftíma kynja og hvort það hafði áhrif á líftíma persónanna hvort þær voru góðar eða vondar.

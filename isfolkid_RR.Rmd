@@ -60,7 +60,7 @@ library(ggplot2)
 
 # Notendaviðmót (UI)
 ui <- fluidPage(
-  titlePanel("Saga Ísfólksins - Gender and Age Analysis"),
+  titlePanel("Saga Ísfólksins - Aldur, kynja og eiginleiki persóna"),
   
   sidebarLayout(
     sidebarPanel(
@@ -109,4 +109,63 @@ server <- function(input, output) {
 
 # Keyra Shiny appið
 shinyApp( ui = ui, server = server)
+```
+
+
+
+```{r}
+# Finna hæsta og lægsta aldur fyrir konur
+max_female_age <- max(age_data$age[age_data$gender == "F"], na.rm = TRUE)
+min_female_age <- min(age_data$age[age_data$gender == "F"], na.rm = TRUE)
+
+# Finna hæsta og lægsta aldur fyrir karla
+max_male_age <- max(age_data$age[age_data$gender == "M"], na.rm = TRUE)
+min_male_age <- min(age_data$age[age_data$gender == "M"], na.rm = TRUE)
+
+# Birta niðurstöður
+cat("Hæsti aldur kvenna:", max_female_age, "\nLægsti aldur kvenna:", min_female_age, "\n")
+cat("Hæsti aldur karla:", max_male_age, "\nLægsti aldur karla:", min_male_age, "\n")
+
+# Finna meðalaldur fyrir konur
+mean_female_age <- mean(age_data$age[age_data$gender == "F"], na.rm = TRUE)
+
+# Finna meðalaldur fyrir karla
+mean_male_age <- mean(age_data$age[age_data$gender == "M"], na.rm = TRUE)
+
+# Birta niðurstöður
+cat("Meðalaldur kvenna:", mean_female_age, "\n")
+cat("Meðalaldur karla:", mean_male_age, "\n")
+
+# Finna meðalaldur fyrir "good" persónur
+mean_good_age <- mean(age_distribution_data$age[age_distribution_data$nature == "good"], na.rm = TRUE)
+
+# Finna meðalaldur fyrir "evil" persónur
+mean_evil_age <- mean(age_distribution_data$age[age_distribution_data$nature == "evil"], na.rm = TRUE)
+
+# Birta niðurstöður
+cat("Meðalaldur 'good' persóna:", mean_good_age, "\n")
+cat("Meðalaldur 'evil' persóna:", mean_evil_age, "\n")
+
+# Finna meðalaldur, hæsta og lægsta aldur fyrir "good" persónur
+mean_good_age <- mean(age_distribution_data$age[age_distribution_data$nature == "good"], na.rm = TRUE)
+max_good_age <- max(age_distribution_data$age[age_distribution_data$nature == "good"], na.rm = TRUE)
+min_good_age <- min(age_distribution_data$age[age_distribution_data$nature == "good"], na.rm = TRUE)
+
+# Finna meðalaldur, hæsta og lægsta aldur fyrir "evil" persónur
+mean_evil_age <- mean(age_distribution_data$age[age_distribution_data$nature == "evil"], na.rm = TRUE)
+max_evil_age <- max(age_distribution_data$age[age_distribution_data$nature == "evil"], na.rm = TRUE)
+min_evil_age <- min(age_distribution_data$age[age_distribution_data$nature == "evil"], na.rm = TRUE)
+
+# Birta niðurstöður fyrir "good"
+cat("Meðalaldur 'good' persóna:", mean_good_age, "\n")
+cat("Hæsti aldur 'good' persóna:", max_good_age, "\n")
+cat("Lægsti aldur 'good' persóna:", min_good_age, "\n")
+
+# Birta niðurstöður fyrir "evil"
+cat("Meðalaldur 'evil' persóna:", mean_evil_age, "\n")
+cat("Hæsti aldur 'evil' persóna:", max_evil_age, "\n")
+cat("Lægsti aldur 'evil' persóna:", min_evil_age, "\n")
+
+
+
 ```
