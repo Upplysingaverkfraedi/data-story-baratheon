@@ -1,0 +1,112 @@
+---
+title: "isfolkid_R"
+author: "Erlendur"
+date: "2024-10-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("RSQLite")
+library(RSQLite)
+install.packages("dplyr")
+library(dplyr)
+```
+
+```{r}
+# Tengjast SQLite gagnagrunninum
+library(RSQLite)
+con <- dbConnect(RSQLite::SQLite(), "isfolkid.db")
+
+# Sækja gögn um kyn og aldur
+gender_age_data <- dbGetQuery(con, "
+                              SELECT
+                              gender, 
+                              COALESCE(death, 2024) - birth AS age
+                              FROM family
+                              WHERE birth IS NOT NULL AND gender IS NOT NULL;
+                              ")
+
+# Sækja öll aldursgögn eftir kyni
+age_data <- dbGetQuery(con, "
+  SELECT gender, COALESCE(death, 2024) - birth AS age
+  FROM family
+  WHERE birth IS NOT NULL AND gender IS NOT NULL;
+")
+
+
+# Sækja aldursgögn fyrir good vs evil persónur
+age_distribution_data <- dbGetQuery(con, "
+  SELECT
+    gender,
+    COALESCE(chosen_one, 'Unknown') AS nature, 
+    COALESCE(death, 2024) - birth AS age
+  FROM family
+  WHERE birth IS NOT NULL
+  AND chosen_one IN ('good', 'evil')
+  AND gender IS NOT NULL;
+")
+
+# Loka tenginu
+dbDisconnect(con)
+```
+
+```{r}
+library(shiny)
+library(ggplot2)
+
+# Notendaviðmót (UI)
+ui <- fluidPage(
+  titlePanel("Saga Ísfólksins - Gender and Age Analysis"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      # Þú getur bætt við fleiri valkostum ef þörf er á
+    ),
+    
+    mainPanel(
+      plotOutput("genderAgePlot"), # Aldursdreifing eftir kyni
+      plotOutput("ageData"), # Aldur eftir kyni
+      plotOutput("ageDistributionPlot"), # Aldur og kyn eftir good eða evil
+    )
+  )
+)
+
+# Server hluti
+server <- function(input, output) {
+  
+  # Alduredreifing eftir kyn
+  output$genderAgePlot <- renderPlot({
+    ggplot(gender_age_data, aes(x = age, fill = gender)) +
+      geom_histogram(position = "dodge", binwidth = 5, color = "black") +
+      theme_minimal() +
+      labs(title = "Aldursdreifing eftir kyni", x = "Aldur", y = "Fjöldi") +
+      scale_fill_manual(values = c("F" = "pink", "M" = "lightblue"), name = "Kyn")
+  })
+  
+  # Boxplot með aldursdreifingu eftir kyni
+  output$ageData <- renderPlot({
+    ggplot(age_data, aes(x = gender, y = age, fill = gender)) +
+      geom_boxplot() +
+      theme_minimal() +
+      labs(title = "Aldursdreifing eftir kyni - Boxplot", x = "Kyn", y = "Aldur") +
+      scale_fill_manual(values = c("F" = "pink", "M" = "lightblue"), name = "Kyn")
+  })
+    
+  # Aldursdreifing good vs evil (Boxplot fyrir aldursdreifingu)
+    output$ageDistributionPlot <- renderPlot({
+      ggplot(age_distribution_data, aes(x = nature, y = age, fill = gender)) +
+        geom_boxplot() +
+        theme_minimal() +
+        labs(title = "Aldursdrefing good vs evil með kynjum", x = "Eiginleiki", y = "Aldur") +
+        scale_fill_manual(values = c("F" = "pink", "M" = "lightblue"), name = "Kyn")
+  })
+  
+}
+
+# Keyra Shiny appið
+shinyApp( ui = ui, server = server)
+```
