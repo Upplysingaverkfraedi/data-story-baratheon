@@ -1,3 +1,5 @@
+
+liður 2-gagnavinnsla
 Í greiningu á gögnum er mikilvægt að átta sig á hver sé markhópurinn. Því mismunandi gögn
 eru áhugaverð fyrir ólíka hópa. Markhópurinn fyrir þetta verkefni er  flest fólk sem er rétt
 skriðið yfir tvítugt. Bókaflokkurnn sem gögnin byggjast á kom fyrst út á níuanda áratug 20. aldarinnar.
@@ -13,6 +15,8 @@ bækurnar. Viljum að markhópurinn átti sig á hvað Ísfólkið bíður upp �
 sýna þeim gögn um persónurnar. Frásögnin mun vonandi hvetja einhverja nemendur til þess að kynna sér
 bækurnar frekar eða jafnvel hefja lestur á þeim.
 
+liður 1-gagnaöflun
+
 Tengjast gagngagrunni.
 
   con <- dbConnect(RSQLite::SQLite(), "slóð að gagnagrunni") Til að tengjast gagnagrunninum og geta unnið með
@@ -21,7 +25,7 @@ Tengjast gagngagrunni.
   inn í R umhverfið þar sem var síðan hægt að vinna með hann.
 
 
-
+liður 3
 Ættartengslar-net
 
 Það er áhugavert við þessar bækur hversu margar persónur koma við sögu. Margar af þeim eru skyldar
@@ -57,11 +61,17 @@ fengu álögin en voru ,,converted". Þá ætti að vera auðvelt að lesa út f
 erfðist.
 
 
+
 Tveir gagnarammar eru búnir til og sameinaðir með því að nota rbind. Hver gagnarammi táknar tengsl eða tengingu í
  net-grafinu. from = family_data$mom, to = family_data$id er skipun til að tengja móðir við barn, einnig sama skipun
  framkvæmd nema tenging milli föður og barns.
 
  Innan VisNetwork setup er ýmsar skipanir keyrðar til að stjórna hvernig gröfin líta út í shiny.
+
+Mynd 1: Hér sést tréið úr fjarlægð. Sést vel hversu margar persónur eru notaðar og litirnir eftir álögum.
+
+Mynd 2: Sýnir betur tengingar hér sést t.d. að Ingríður er með álögin og er góð. Foreldrar hennar eru úlfur og Berit.
+Á hún barnið Daníel með Dan.
 
 
  Því næst var búið til tvö skífurit annað sem sýnir með skýru móti hlutfallslegan mun á milli þeirra sem fengu bölvun og þeirra
@@ -74,7 +84,9 @@ status_data <- as.data.frame(status_counts) breytir töflunni í gagnaramma til 
 <- status_data$Freq / sum(status_data$Freq), er notað til að reikna fjölda sem tilheyrir hverjum hópi. GGplo2 er nýtt fyrir
 til að setja upp gröfin en einnig geom_bar og coord_polar sem eru mikilvæg þegar unnið er með skífurit.
 
+Mynd 3: Hér sést skýrt hversu margir eru með álög.
 
+Mynd 4: Hér sést hlutfallið á milli góðs, ills og converted.
 
 
 
