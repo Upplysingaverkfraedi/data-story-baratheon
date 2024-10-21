@@ -1,0 +1,101 @@
+library(shiny)
+library(ggplot2)
+library(DBI)
+library(RSQLite)
+
+# Tengja við SQLite gagnagrunninn
+con <- dbConnect(RSQLite::SQLite(), "/Users/Dalros/Desktop/Iðnaðarverkfræði/upplýsinga/isfolkid.db")
+
+# User Interface
+ui <- fluidPage(
+  
+  # Fyrirsögn
+  titlePanel("Gögn um Ísfólkið"),
+  
+  # Flipa síður til að sýna gröf
+  tabsetPanel(
+    
+    # Fyrsti flipi: Fjöldi barna fæddra á hverju ári
+    tabPanel("Fjöldi barna á ári", 
+             plotOutput("childrenBornPlot")),
+    
+    # Annar flipi: Aldur foreldra við fæðingu
+    tabPanel("Aldur foreldra", 
+             plotOutput("parentAgesPlot")),
+    
+    # Þriðji flipi: Fjöldi barna á hjónaband
+    tabPanel("Fjöldi barna á hjónaband", 
+             plotOutput("marriagesPlot"))
+  )
+)
+
+# Server hluti - Búa til gröfin og vinna með gögnin
+server <- function(input, output) {
+  
+  # Graf 1: Fjöldi barna fæddra á hverju ári
+  output$childrenBornPlot <- renderPlot({
+    children_born <- dbGetQuery(con, "
+      SELECT f.birth AS child_birth_year, COUNT(f.id) AS num_children_born
+      FROM family f
+      JOIN children c ON f.id = c.child
+      GROUP BY f.birth
+      ORDER BY f.birth;
+    ")
+    
+    ggplot(children_born, aes(x = child_birth_year, y = num_children_born)) +
+  geom_line(color = "skyblue", size = 1) +  # Línurit
+  geom_point(color = "black", size = 2) +   # Punkta á línunni til að merkja árin
+  labs(title = "Fjöldi barna fæddra á hverju ári", 
+       x = "Fæðingarár", 
+       y = "Fjöldi barna") +
+  theme_minimal()
+  })
+  
+  # Graf 2: Aldur foreldra við fæðingu
+  output$parentAgesPlot <- renderPlot({
+    parent_ages <- dbGetQuery(con, "
+      SELECT f1.birth AS child_birth_year, 
+             AVG(f1.birth - mom.birth) AS avg_mother_age_at_birth, 
+             AVG(f1.birth - dad.birth) AS avg_father_age_at_birth
+      FROM family f1
+      JOIN family mom ON f1.mom = mom.id
+      JOIN family dad ON f1.dad = dad.id
+      GROUP BY f1.birth
+      ORDER BY f1.birth;
+    ")
+    
+    ggplot(parent_ages, aes(x = child_birth_year)) +
+      geom_point(aes(y = avg_mother_age_at_birth, color = "Average Mother's Age"), size = 3) +
+      geom_point(aes(y = avg_father_age_at_birth, color = "Average Father's Age"), size = 3) +
+      geom_smooth(aes(y = avg_mother_age_at_birth, color = "Average Mother's Age"), method = "loess", se = FALSE, linetype = "dashed", size = 0.7) +
+      geom_smooth(aes(y = avg_father_age_at_birth, color = "Average Father's Age"), method = "loess", se = FALSE, linetype = "dashed", size = 0.7) +
+      labs(title = "Aldur foreldra við fæðingu", 
+           x = "Fæðingarár", 
+           y = "Meðaltal aldurs") +
+      scale_color_manual(values = c("Average Mother's Age" = "pink", "Average Father's Age" = "blue")) +
+      theme_minimal()
+  })
+  
+  # Graf 3: Fjöldi barna á hjónaband
+  output$marriagesPlot <- renderPlot({
+    children_count_per_marriage <- dbGetQuery(con, "
+      SELECT m.female AS female_id, m.male AS male_id, COUNT(c.child) AS children_count
+      FROM marriage m
+      LEFT JOIN children c ON m.female = c.parent OR m.male = c.parent
+      GROUP BY m.female, m.male;
+    ")
+    
+    marriage_counts <- as.data.frame(table(children_count_per_marriage$children_count))
+    colnames(marriage_counts) <- c("children_count", "number_of_marriages")
+    
+    ggplot(marriage_counts, aes(x = as.factor(children_count), y = number_of_marriages)) +
+      geom_bar(stat = "identity", fill = "lightgreen") +
+      labs(title = "Fjöldi hjónabanda eftir fjölda barna", 
+           x = "Fjöldi barna", 
+           y = "Fjöldi hjónabanda") +
+      theme_minimal()
+  })
+}
+
+# Keyra shiny appið
+shinyApp(ui = ui, server = server)
