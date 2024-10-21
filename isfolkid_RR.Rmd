@@ -60,7 +60,7 @@ library(ggplot2)
 
 # Notendaviðmót (UI)
 ui <- fluidPage(
-  titlePanel("Saga Ísfólksins - Aldur, kynja og eiginleiki persóna"),
+  titlePanel("Saga Ísfólksins - Líftími, kynja og eiginleiki persóna"),
   
   sidebarLayout(
     sidebarPanel(
@@ -83,7 +83,7 @@ server <- function(input, output) {
     ggplot(gender_age_data, aes(x = age, fill = gender)) +
       geom_histogram(position = "dodge", binwidth = 5, color = "black") +
       theme_minimal() +
-      labs(title = "Aldursdreifing eftir kyni", x = "Aldur", y = "Fjöldi") +
+      labs(title = "Líftími eftir kyni", x = "Aldur", y = "Fjöldi") +
       scale_fill_manual(values = c("F" = "pink", "M" = "lightblue"), name = "Kyn")
   })
   
@@ -92,16 +92,16 @@ server <- function(input, output) {
     ggplot(age_data, aes(x = gender, y = age, fill = gender)) +
       geom_boxplot() +
       theme_minimal() +
-      labs(title = "Aldursdreifing eftir kyni - Boxplot", x = "Kyn", y = "Aldur") +
+      labs(title = "Líftími eftir kyni - Boxplot", x = "Kyn", y = "Aldur") +
       scale_fill_manual(values = c("F" = "pink", "M" = "lightblue"), name = "Kyn")
   })
     
-  # Aldursdreifing good vs evil (Boxplot fyrir aldursdreifingu)
+  # Aldursdreifing good vs evil (Boxplot fyrir líftíma persóna)
     output$ageDistributionPlot <- renderPlot({
       ggplot(age_distribution_data, aes(x = nature, y = age, fill = gender)) +
         geom_boxplot() +
         theme_minimal() +
-        labs(title = "Aldursdrefing good vs evil með kynjum", x = "Eiginleiki", y = "Aldur") +
+        labs(title = "Líftími persóna good vs evil með kynjum", x = "Eiginleiki", y = "Aldur") +
         scale_fill_manual(values = c("F" = "pink", "M" = "lightblue"), name = "Kyn")
   })
   
