@@ -1,0 +1,3 @@
+alvarpid           children           marriage           storytel_isfolkid
+books              family             special_events     storytel_iskisur
+
